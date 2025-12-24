@@ -3,9 +3,12 @@
 This Streamlit app detects vehicle number plates from images and extracts text using OCR.
 
 ## Features
-- YOLO-based plate detection
-- Image enhancement
-- OCR using Tesseract
-- Simple web interface
+- YOLO-based license plate detection
+- Image preprocessing for OCR
+- Streamlit UI
+
+## Deployment
+Hosted on Streamlit Cloud
+
 
 
