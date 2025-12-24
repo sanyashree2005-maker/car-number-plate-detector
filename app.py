@@ -6,39 +6,71 @@ from PIL import Image
 
 st.set_page_config(page_title="Car Number Plate Detection", layout="wide")
 
+st.title("🚗 Car Number Plate Detection using YOLO")
+
+# ------------------ Load YOLO Model ------------------
 @st.cache_resource
 def load_model():
     return YOLO("best.pt")
 
 model = load_model()
 
-st.title("🚗 Car Number Plate Detection using YOLO")
+# ------------------ Plate Enhancement ------------------
+def enhance_plate(plate):
+    plate = cv2.resize(plate, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.cvtColor(plate, cv2.COLOR_BGR2GRAY)
+    gray = cv2.bilateralFilter(gray, 11, 17, 17)
 
-uploaded_file = st.file_uploader("Upload a car image", type=["jpg", "jpeg", "png"])
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
+
+    thresh = cv2.adaptiveThreshold(
+        enhanced, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY, 11, 2
+    )
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    final = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+
+    return final
+
+# ------------------ Upload Image ------------------
+uploaded_file = st.file_uploader("Upload a car image", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     img_np = np.array(image)
 
-    results = model(img_np)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
-    plate_crop = None
+    # ------------------ YOLO Inference ------------------
+    results = model(img_np)[0]
 
-    for r in results:
-        for box in r.boxes:
+    if len(results.boxes) == 0:
+        st.warning("No number plate detected.")
+    else:
+        st.subheader("Detected Plate Regions")
+
+        for i, box in enumerate(results.boxes):
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             plate_crop = img_np[y1:y2, x1:x2]
-            cv2.rectangle(img_np, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-    st.image(img_np, caption="Detected Plate Region", use_column_width=True)
+            if plate_crop.size == 0:
+                continue
 
-    if plate_crop is not None:
-        st.subheader("Detected Plate")
-        st.image(plate_crop, width=300)
+            enhanced_plate = enhance_plate(plate_crop)
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.image(plate_crop, caption=f"Plate {i+1} (Raw)", use_container_width=True)
+
+            with col2:
+                st.image(enhanced_plate, caption=f"Plate {i+1} (Enhanced)", use_container_width=True)
 
         st.info(
-            "OCR is disabled in Streamlit Cloud due to system limitations.\n\n"
-            "Number plate text extraction is supported in local / Docker deployments."
+            "🔎 OCR is disabled on Streamlit Cloud due to system limitations.\n\n"
+            "✅ Plate detection and enhancement work correctly.\n"
+            "🖥️ Full OCR works in **local or Docker deployment**."
         )
-    else:
-        st.warning("No number plate detected.")
