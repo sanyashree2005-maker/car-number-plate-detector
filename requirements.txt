@@ -1,9 +1,7 @@
-streamlit
-ultralytics==8.0.216
-torch
-torchvision
-pillow
-numpy
+streamlit==1.29.0
+ultralytics==8.0.230
 opencv-python-headless
+numpy
+pillow
 pytesseract
-
+torch
