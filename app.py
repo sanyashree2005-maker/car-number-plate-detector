@@ -2,29 +2,23 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import pytesseract
-from ultralytics import YOLO
 
-# ---------------------------
-# Lazy OpenCV Import (CRITICAL FIX)
-# ---------------------------
-def import_cv2():
+# ⚠️ DO NOT import cv2 here
+# ⚠️ DO NOT import ultralytics here
+
+def load_cv2():
     import cv2
     return cv2
 
-# ---------------------------
-# Load YOLO Model
-# ---------------------------
 @st.cache_resource
 def load_model():
+    from ultralytics import YOLO
     return YOLO("best.pt")
 
 model = load_model()
 
-# ---------------------------
-# OCR Function
-# ---------------------------
 def read_number_plate(plate_img):
-    cv2 = import_cv2()
+    cv2 = load_cv2()
 
     gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 11, 17, 17)
@@ -48,16 +42,12 @@ def read_number_plate(plate_img):
     text = pytesseract.image_to_string(thresh, config=config)
     return text.strip()
 
-# ---------------------------
-# Streamlit UI
-# ---------------------------
-st.set_page_config(page_title="Car Number Plate Detection", layout="centered")
+st.set_page_config(page_title="Car Number Plate Detection")
 
 st.title("🚗 Car Number Plate Detection")
-st.write("Upload an image to detect the number plate and extract text.")
 
 uploaded_file = st.file_uploader(
-    "Upload a car image",
+    "Upload a vehicle image",
     type=["jpg", "jpeg", "png"]
 )
 
@@ -66,13 +56,12 @@ if uploaded_file:
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
     img_np = np.array(image)
+
     results = model(img_np, verbose=False)[0]
 
     if results.boxes is None:
         st.warning("No number plate detected.")
     else:
-        cv2 = import_cv2()
-
         for box in results.boxes.xyxy:
             x1, y1, x2, y2 = map(int, box)
             plate = img_np[y1:y2, x1:x2]
