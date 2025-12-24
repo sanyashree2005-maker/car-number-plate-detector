@@ -1,8 +1,8 @@
 streamlit
 ultralytics
-opencv-python-headless
-numpy
-pillow
-pytesseract
 torch
 torchvision
+numpy
+Pillow
+pytesseract
+opencv-python-headless==4.8.1.78
