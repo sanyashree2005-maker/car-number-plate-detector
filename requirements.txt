@@ -1,8 +1,9 @@
-streamlit
-ultralytics
-torch
-torchvision
-numpy
-Pillow
-pytesseract
+streamlit==1.29.0
+ultralytics==8.0.196
+torch==2.0.1
+torchvision==0.15.2
+numpy==1.24.4
+Pillow==10.0.1
+pytesseract==0.3.10
 opencv-python-headless==4.8.1.78
+
