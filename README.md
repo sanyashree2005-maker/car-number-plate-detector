@@ -8,9 +8,4 @@ This Streamlit app detects vehicle number plates from images and extracts text u
 - OCR using Tesseract
 - Simple web interface
 
-## Run Locally
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-
 
