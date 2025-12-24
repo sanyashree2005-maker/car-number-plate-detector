@@ -1,8 +1,0 @@
-streamlit
-ultralytics
-torch
-torchvision
-numpy
-Pillow
-pytesseract
-opencv-python-headless==4.8.1.78
