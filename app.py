@@ -94,4 +94,4 @@ if uploaded_file:
     ##st.info(
        ## "ℹ OCR is disabled on Streamlit Cloud.\n\n"
         ##"Text extraction works in local or Docker deployments with Tesseract installed."
-    )
+   # )
