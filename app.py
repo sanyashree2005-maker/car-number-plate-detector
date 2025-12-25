@@ -91,7 +91,7 @@ if uploaded_file:
         st.warning("No plates detected.")
 
     # ---------------- OCR NOTE ----------------
-    st.info(
-        "ℹ OCR is disabled on Streamlit Cloud.\n\n"
-        "Text extraction works in local or Docker deployments with Tesseract installed."
+    ##st.info(
+       ## "ℹ OCR is disabled on Streamlit Cloud.\n\n"
+        ##"Text extraction works in local or Docker deployments with Tesseract installed."
     )
